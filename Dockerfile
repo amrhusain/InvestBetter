@@ -1,8 +1,5 @@
-# Use an OpenJDK base image
-FROM openjdk:17
-
-# Install Maven
-RUN apt-get update && apt-get install -y maven
+# Use an official Maven image with OpenJDK
+FROM maven:3.8.6-openjdk-17 AS build
 
 WORKDIR /code
 
@@ -16,8 +13,15 @@ RUN mvn dependency:resolve
 COPY src /code/src
 RUN mvn package
 
-# Expose the port the app runs on
+# Stage 2: Create a smaller final image
+FROM openjdk:17
+
+WORKDIR /app
+
+# Copy the JAR file from the build stage
+COPY --from=build /code/target/sparkexample-jar-with-dependencies.jar /app/sparkexample.jar
+
 EXPOSE 8080
 
-# Define the command to run the application
-CMD ["java", "-jar", "target/sparkexample-jar-with-dependencies.jar"]
+# Command to run the application
+CMD ["java", "-jar", "sparkexample.jar"]
