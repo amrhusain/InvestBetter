@@ -1,7 +1,7 @@
 FROM openjdk:17 
 
 # Install maven
-RUN apk update
+RUN apk --update --no-cache
 RUN apk add install -y maven
 
 WORKDIR /code
