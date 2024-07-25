@@ -1,12 +1,19 @@
-FROM openjdk:17-jdk-slim AS build
-COPY src /home/app/src
-COPY pom.xml /home/app
-RUN mvn -f /home/app/pom.xml clean install
+FROM java:17 
 
+# Install maven
+RUN apt-get update
+RUN apt-get install -y maven
 
-FROM openjdk:17
-VOLUME /tmp
+WORKDIR /code
+
+# Prepare by downloading dependencies
+ADD pom.xml /code/pom.xml
+RUN ["mvn", "dependency:resolve"]
+RUN ["mvn", "verify"]
+
+# Adding source, compile and package into a fat jar
+ADD src /code/src
+RUN ["mvn", "package"]
+
 EXPOSE 8080
-ARG JAR_FILE=target/InvestBetter-0.0.1-SNAPSHOT.jar
-ADD ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+CMD ["/usr/lib/jvm/java-17-openjdk-amd64/bin/java", "-jar", "target/sparkexample-jar-with-dependencies.jar"]
