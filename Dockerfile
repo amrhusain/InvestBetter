@@ -1,19 +1,23 @@
-FROM openjdk:17 
+# Use an OpenJDK base image
+FROM openjdk:17
 
-# Install maven
-RUN apk --update --no-cache
-RUN apk add install -y maven
+# Install Maven
+RUN apt-get update && apt-get install -y maven
 
 WORKDIR /code
 
-# Prepare by downloading dependencies
-ADD pom.xml /code/pom.xml
-RUN ["mvn", "dependency:resolve"]
-RUN ["mvn", "verify"]
+# Copy Maven configuration
+COPY pom.xml /code/
 
-# Adding source, compile and package into a fat jar
-ADD src /code/src
-RUN ["mvn", "package"]
+# Download dependencies
+RUN mvn dependency:resolve
 
+# Copy source code and build the application
+COPY src /code/src
+RUN mvn package
+
+# Expose the port the app runs on
 EXPOSE 8080
-CMD ["/usr/lib/jvm/java-17-openjdk-amd64/bin/java", "-jar", "target/sparkexample-jar-with-dependencies.jar"]
+
+# Define the command to run the application
+CMD ["java", "-jar", "target/sparkexample-jar-with-dependencies.jar"]
