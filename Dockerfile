@@ -17,7 +17,7 @@ COPY src /code/src
 RUN mvn package
 
 # Expose the port the app runs on
-EXPOSE 8082
+EXPOSE 8080
 
 # Define the command to run the application
-CMD ["java", "-jar", "target/sparkexample-jar-with-dependencies.jar"]
+CMD ["java", "-jar", "target/InvestBetter-0.0.1-SNAPSHOT.jar"]
