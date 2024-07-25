@@ -1,8 +1,8 @@
 FROM openjdk:17 
 
 # Install maven
-RUN apt-get update
-RUN apt-get install -y maven
+RUN apk update
+RUN apk add install -y maven
 
 WORKDIR /code
 
