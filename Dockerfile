@@ -1,4 +1,8 @@
-FROM maven:3.8.6-openjdk-17 AS build
+# Use an OpenJDK image based on Alpine Linux
+FROM openjdk:17-alpine
+
+# Install Maven
+RUN apk update && apk add maven
 
 WORKDIR /code
 
@@ -7,3 +11,13 @@ COPY pom.xml /code/
 
 # Download dependencies
 RUN mvn dependency:resolve
+
+# Copy source code and build the application
+COPY src /code/src
+RUN mvn package
+
+# Expose the port the app runs on
+EXPOSE 8080
+
+# Define the command to run the application
+CMD ["java", "-jar", "target/sparkexample-jar-with-dependencies.jar"]
