@@ -1,3 +1,9 @@
-FROM openjdk:17
+FROM maven:3.8.6-openjdk-17 AS build
 
-RUN apt-get update && apt-get install -y maven
+WORKDIR /code
+
+# Copy Maven configuration
+COPY pom.xml /code/
+
+# Download dependencies
+RUN mvn dependency:resolve
